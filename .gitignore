@@ -1,0 +1,25 @@
+# Saved model / pipeline files — do not commit binary artifacts
+*.joblib
+*.pkl
+*.pickle
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Environment
+.env
+.venv
+env/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
