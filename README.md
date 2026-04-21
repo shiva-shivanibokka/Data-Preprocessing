@@ -75,7 +75,14 @@ Initial data loading, column selection, target variable definition, and splittin
 
 ### 5) Exploratory Data Analysis (EDA)
 
-Getting to know your data before touching it. Includes 6-panel visual dashboard.
+Getting to know your data before touching it. Includes a 7-panel visual dashboard showing:
+- Age distribution (histogram)
+- Survival class balance (bar chart)
+- Passenger class distribution (bar chart)
+- Age distribution by survival outcome (overlapping histograms)
+- Correlation heatmap (numeric features)
+- Survival rate by sex (bar chart)
+- Survival rate by family size / alone status
 
 | Step | What it does |
 |---|---|
@@ -96,7 +103,7 @@ Getting to know your data before touching it. Includes 6-panel visual dashboard.
 | Step | What it does |
 |---|---|
 | `isna()` | Returns True/False for every cell |
-| `isna().sum()` | Count missing values per column |
+| `isna().sum()` | Count missing values per column — also includes a bar chart of missing counts |
 | `isna().sum(axis=1)` | Count missing values per row |
 | `dropna()` | Drop rows with any missing value |
 | `dropna(axis=1)` | Drop columns with any missing value |
@@ -157,7 +164,12 @@ Getting to know your data before touching it. Includes 6-panel visual dashboard.
 
 ### 11) Feature Scaling
 
-All scalers are fit on training data only and applied to both train and test.
+Before demonstrating scalers, a train/test split is performed (Section 11.0) so all scalers
+are fit on training data only and applied to both train and test — the correct practice for
+preventing data leakage.
+
+Each scaler is demonstrated individually, followed by a side-by-side boxplot comparison of
+all scalers applied to the same column (`age`).
 
 | Scaler | Formula | Best For |
 |---|---|---|
@@ -212,9 +224,14 @@ Fitting on test data causes data leakage — your model appears better than it r
 
 | Step | What it does |
 |---|---|
-| Creating new columns | Combine existing features into more informative ones (e.g., `family_size = sibsp + parch + 1`) |
-| `pd.cut()` | Bin a continuous column into fixed-width ranges |
-| `pd.qcut()` | Bin a continuous column into equal-frequency ranges |
+| `family_size = sibsp + parch + 1` | Total family members aboard (including the passenger) |
+| `is_alone` | Binary flag: 1 if travelling solo, 0 otherwise — derived from `family_size` |
+| `age_x_class` | Interaction feature: `age × pclass` — captures joint effect of age and passenger class |
+| `pd.cut()` | Bin a continuous column into fixed-width ranges (e.g., age groups by domain knowledge) |
+| `pd.qcut()` | Bin a continuous column into equal-frequency ranges (e.g., age quartiles) |
+
+Engineered features are visualized with a 3-panel chart: family size distribution,
+survival rate by family size, and survival rate for passengers travelling alone vs with family.
 
 ---
 
@@ -247,6 +264,7 @@ Includes scree plot and 2D scatter coloured by survival outcome.
 
 SMOTE is applied **only on training data** after the train/test split.
 The test set must remain imbalanced to reflect the real-world distribution.
+Includes a before/after bar chart showing class balance pre- and post-SMOTE.
 
 ---
 
