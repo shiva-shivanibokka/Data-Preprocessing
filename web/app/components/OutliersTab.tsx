@@ -49,7 +49,8 @@ export default function OutliersTab() {
           Each dot is one passenger’s <b>fare</b>, spread out vertically only so they don’t overlap. The shaded band is the
           IQR-normal range <b>[{data.iqr.low}, {data.iqr.high}]</b>; every <span style={{ color: "#fb7185" }}>red</span> dot
           past its right edge is a flagged outlier. Hover a dot for its exact fare. Because fare is right-skewed, this rule
-          flags a lot — <b>{data.iqr.count}</b> in total.
+          flags a lot — <b>{data.iqr.count}</b> across all 891 fares. (The plot shows a representative sample, so you’ll see
+          fewer red dots than that here.)
         </HowToRead>
       </div>
 
@@ -63,7 +64,8 @@ export default function OutliersTab() {
         <HowToRead>
           The x-axis is <b>fare</b>, each bar is <b>how many passengers</b> paid in that range. The red dashed line sits at{" "}
           <b>mean + 3·std = ${data.z.cut}</b>; only the <span style={{ color: "#fb7185" }}>red</span> bars beyond it are
-          flagged. Because it assumes a bell curve, it’s far stricter here — just <b>{data.z.count}</b> outliers.
+          flagged. Because it assumes a bell curve, it’s far stricter — just <b>{data.z.count}</b> outliers across all 891
+          fares (this histogram is built from the same representative sample).
         </HowToRead>
       </div>
 
@@ -91,6 +93,7 @@ export default function OutliersTab() {
           Each dot is one passenger placed by <b>both</b> age and fare; hover for the values. The single-column rules above
           could only look left-to-right or bottom-to-top. This one flags <span style={{ color: "#fb7185" }}>red</span> points
           that are odd <b>jointly</b> — e.g. a very young passenger paying a very high fare — which IQR and z-score can miss.
+          It flagged <b>{data.iso.count}</b> rows overall; a sample of passengers is plotted here, so you’ll see fewer.
         </HowToRead>
       </div>
 
