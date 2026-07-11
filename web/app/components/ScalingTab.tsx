@@ -54,10 +54,11 @@ export default function ScalingTab() {
 
         <HowToRead>
           Each panel is a <b>box-and-whisker plot</b> of the same column after a different scaler. The <b>box</b> spans the
-          middle 50% of values (Q1 to Q3), the <b>line across it</b> is the median, and the <b>whiskers</b> reach the min and
-          max. Hover any box to see its exact five numbers. Crucially, <b>every panel is scaled to its own range</b> — read the
-          min…max printed under each. That’s the whole point: the box <b>shape</b> is identical everywhere, but the numbers on
-          the axis differ.
+          middle 50% of values (Q1–Q3), the <b>line across it</b> is the median, and the <b>whiskers</b> reach the typical
+          range. A <b style={{ color: "#fb7185" }}>▲</b> at the top means a few extreme values sit even higher — for{" "}
+          <b>fare</b> that’s the handful of first-class passengers who paid far more than everyone else. Hover any panel for the
+          exact five numbers, and read the true min…max printed underneath. The point: the box <b>shape</b> is identical across
+          every scaler — only the numbers on the axis change.
         </HowToRead>
 
         <div className="callout" style={{ marginTop: "1.2rem" }}>

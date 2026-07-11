@@ -1,16 +1,17 @@
 "use client";
 
-import { useJson, Bars, HowToRead } from "../lib/chart";
+import { useJson, Bars, HowToRead, useHoverTip, TipBox } from "../lib/chart";
 import { Tip } from "../lib/tip";
 
 type DtData = { by_hour: number[]; clock: { h: number; sin: number; cos: number }[] };
 
 function Clock({ clock }: { clock: DtData["clock"] }) {
-  const S = 300;
+  const { tip, wrap, move, leave } = useHoverTip();
+  const S = 320;
   const c = S / 2;
-  const R = 110;
+  const R = 120;
   return (
-    <div className="chart-box">
+    <div className="chart-box" ref={wrap} style={{ position: "relative", maxWidth: 420, margin: "0 auto" }} onMouseLeave={leave}>
       <svg viewBox={`0 0 ${S} ${S}`}>
         <circle cx={c} cy={c} r={R} fill="none" stroke="var(--border)" strokeDasharray="3 4" />
         {clock.map((p) => {
@@ -18,19 +19,19 @@ function Clock({ clock }: { clock: DtData["clock"] }) {
           const y = c - p.sin * R;
           return (
             <g key={p.h}>
-              <circle cx={x} cy={y} r={12} fill="var(--panel-2)" stroke="var(--violet)">
-                <title>{`hour ${p.h} → sin ${p.sin.toFixed(2)}, cos ${p.cos.toFixed(2)}`}</title>
-              </circle>
-              <text x={x} y={y + 3.5} fill="var(--text)" fontSize={9} textAnchor="middle">
+              <circle cx={x} cy={y} r={13} fill="var(--panel-2)" stroke="var(--violet)" className="mark"
+                onMouseMove={(e) => move(e, `hour ${p.h}\nsin ${p.sin.toFixed(2)}   cos ${p.cos.toFixed(2)}`)} />
+              <text x={x} y={y + 3.5} fill="var(--text)" fontSize={9} textAnchor="middle" pointerEvents="none">
                 {p.h}
               </text>
             </g>
           );
         })}
-        <text x={c} y={c} fill="var(--muted)" fontSize={11} textAnchor="middle">
+        <text x={c} y={c} fill="var(--muted)" fontSize={11} textAnchor="middle" pointerEvents="none">
           hour on a circle
         </text>
       </svg>
+      <TipBox tip={tip} />
     </div>
   );
 }
@@ -69,14 +70,17 @@ export default function DatetimeTab() {
           Why time needs a circle <Tip text="Cyclical encoding maps a repeating value onto a circle with sine and cosine, so the model knows the end wraps back to the start." />
         </p>
         <p className="sdesc">The same 24 hours, placed on a circle by their (cos, sin) coordinates.</p>
-        <div className="grid2">
-          <Clock clock={data.clock} />
-          <div className="callout">
-            As plain integers, hour <b>23</b> and hour <b>0</b> look 23 apart — maximally distant, when they are actually
-            adjacent. Encoding each hour as <b>(cos θ, sin θ)</b> places <b>23:00 right next to 00:00</b> on the ring, so the
-            model finally sees the midnight wrap-around. Do the same for month, day-of-week, and any other repeating field.
-          </div>
+
+        {/* clock on its own row */}
+        <Clock clock={data.clock} />
+
+        {/* explanation as a row below the clock */}
+        <div className="callout" style={{ marginTop: "1.25rem" }}>
+          As plain integers, hour <b>23</b> and hour <b>0</b> look 23 apart — maximally distant, when they are actually
+          adjacent. Encoding each hour as <b>(cos θ, sin θ)</b> places <b>23:00 right next to 00:00</b> on the ring, so the
+          model finally sees the midnight wrap-around. Do the same for month, day-of-week, and any other repeating field.
         </div>
+
         <HowToRead>
           Each node is one <b>hour</b>, positioned by its two new features — <b>cos on the x-axis, sin on the y-axis</b>. Hover
           a node to see those numbers. Walk the ring and notice it’s continuous: <b>23 sits beside 0</b>, exactly the

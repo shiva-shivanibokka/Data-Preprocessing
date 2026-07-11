@@ -26,15 +26,15 @@ export default function OutliersTab() {
       <div className="tiles">
         <div className="tile">
           <div className="v">{data.iqr.count}</div>
-          <div className="k">IQR · {pct(data.iqr.count)} <span className="tiptag"><Tip text="Flags anything outside Q1−1.5×IQR to Q3+1.5×IQR. Distribution-free; generous on skewed data." /></span></div>
+          <div className="k">IQR · {pct(data.iqr.count)} <span className="tiptag"><Tip text={`The big number (${data.iqr.count}) is how many of the 891 fares the IQR rule flags as outliers — ${pct(data.iqr.count)} of them. The rule flags anything outside Q1−1.5×IQR to Q3+1.5×IQR.`} /></span></div>
         </div>
         <div className="tile">
           <div className="v">{data.z.count}</div>
-          <div className="k">z-score · {pct(data.z.count)} <span className="tiptag"><Tip text="Flags points more than 3 standard deviations from the mean. Assumes a bell curve, so it flags few points on skewed data like fare." /></span></div>
+          <div className="k">z-score · {pct(data.z.count)} <span className="tiptag"><Tip text={`The big number (${data.z.count}) is how many fares the z-score rule flags — only ${pct(data.z.count)}. It flags points more than 3 standard deviations from the mean, so it stays strict on skewed data.`} /></span></div>
         </div>
         <div className="tile">
           <div className="v">{data.iso.count}</div>
-          <div className="k">Isolation · {pct(data.iso.count)} <span className="tiptag"><Tip text="A model that isolates points unusual across MULTIPLE features at once. Contamination was set to 5%." /></span></div>
+          <div className="k">Isolation · {pct(data.iso.count)} <span className="tiptag"><Tip text={`The big number (${data.iso.count}) is how many rows IsolationForest flags — ${pct(data.iso.count)}, matching the 5% contamination it was told to expect. It judges age and fare jointly, not one column at a time.`} /></span></div>
         </div>
       </div>
 

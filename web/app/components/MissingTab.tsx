@@ -79,9 +79,11 @@ export default function MissingTab() {
         </div>
         <Bars items={bars} height={260} fmt={(v) => (v ? `${v}` : "")} />
         <HowToRead>
-          The x-axis is <b>age in 5-year bins</b>; each bar’s height is <b>how many passengers fall in that range</b>. Hover a
-          bar for its exact range and count. The tallest raw bar is only ~114 (the natural 20–25 peak) — so when a single bar
-          shoots to <b>283</b>, that spike <b>is</b> the 177 missing ages all being dumped into one value.
+          The x-axis is <b>age in 5-year bins</b>; each bar counts <b>how many passengers fall in that range</b>. Hover a bar
+          for its exact range and count. In the raw <b>drop</b> view the tallest bar is ~114 (the 20–25 range). Switch to{" "}
+          <b>mean</b> or <b>median</b> and the <b>25–30</b> bar leaps to <b>283</b> — because both fill values (~29.7 and 28)
+          land in that range, every one of the 177 missing ages piles into that single bar. <b>KNN</b> is gentler: it spreads
+          those 177 across neighbouring ranges, so its tallest bar is only ~182 and the curve keeps its natural shape.
         </HowToRead>
         <div className="callout" style={{ marginTop: "1rem" }}>
           {BLURB[strat]}
