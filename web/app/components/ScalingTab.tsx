@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useJson, MiniBox, HowToRead } from "../lib/chart";
 import { Tip } from "../lib/tip";
 
-type Box = { min: number; q1: number; median: number; q3: number; max: number; sample: number[] };
+type Box = { min: number; q1: number; median: number; q3: number; max: number };
 type ScaleData = Record<string, Record<string, Box>>;
 
 const ORDER = ["Original", "StandardScaler", "MinMaxScaler", "RobustScaler", "MaxAbsScaler"];

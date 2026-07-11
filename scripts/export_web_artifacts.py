@@ -108,7 +108,6 @@ for col in ["age", "fare"]:
         name: {
             "min": r(v.min()), "q1": r(np.quantile(v, 0.25)), "median": r(np.median(v)),
             "q3": r(np.quantile(v, 0.75)), "max": r(v.max()),
-            "sample": r(np.random.default_rng(0).choice(v, size=min(150, len(v)), replace=False)),
         }
         for name, v in per_scaler.items()
     }
