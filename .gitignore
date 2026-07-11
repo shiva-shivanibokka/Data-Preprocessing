@@ -23,3 +23,11 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+
+# Web app (Next.js)
+node_modules/
+web/.next/
+web/out/
+.vercel
+*.tsbuildinfo
+next-env.d.ts
