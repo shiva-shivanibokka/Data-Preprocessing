@@ -11,10 +11,8 @@ web app** lets you *see* what every step does to the data.
 
 ## 🔗 Live demo
 
-**[→ Open the interactive explainer](#)** &nbsp;·&nbsp; a static, no-server web app (deployed on Vercel)
+**[→ Open the interactive explainer](https://data-preprocessing.vercel.app)** &nbsp;·&nbsp; a static, no-server web app (deployed on Vercel)
 that visualizes every preprocessing step — before and after — right in your browser.
-
-> Replace the link above with your Vercel URL after the first deploy (see [Web app](#-web-app) below).
 
 ---
 
