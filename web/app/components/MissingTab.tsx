@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useJson, Bars } from "../lib/chart";
+import { useJson, Bars, HowToRead } from "../lib/chart";
+import { Tip } from "../lib/tip";
 
 type Strat = { hist: number[]; fill_value: number | null };
 type MissData = {
@@ -18,10 +19,10 @@ const STRATS: { id: string; label: string }[] = [
 ];
 
 const BLURB: Record<string, string> = {
-  none: "Dropping rows keeps the true shape but throws away 177 passengers — a fifth of the data.",
-  mean: "Mean imputation dumps every missing age into one bin at the average, spiking the distribution unnaturally.",
-  median: "Median imputation is more robust to the fare-like skew, but still piles missing values onto a single value.",
-  knn: "KNN fills each gap from the 5 most similar passengers, so the filled ages spread naturally instead of stacking.",
+  none: "Dropping keeps the true shape but throws away 177 passengers — about a fifth of the data. Notice every bar is the same as the raw data; nothing was invented.",
+  mean: "Watch the 25–30 bar rocket from 106 up to 283. That jump of ~177 is every missing age being stacked onto the single average value (29.7) — the distribution now has an unnatural spike.",
+  median: "Same story as mean: the 25–30 bar spikes to 283 because all 177 gaps are filled with one number (median 28). Robust to skew, but still an artificial pile-up.",
+  knn: "KNN fills each gap from the 5 most similar passengers, so the 177 values spread across several bars instead of piling onto one — the shape stays far more natural.",
 };
 
 export default function MissingTab() {
@@ -31,39 +32,65 @@ export default function MissingTab() {
 
   const s = data.age.strategies[strat];
   const edges = data.age.edges;
-  const bars = s.hist.map((v, i) => ({ label: i % 2 === 0 ? `${Math.round(edges[i])}` : "", value: v }));
+  const bars = s.hist.map((v, i) => ({
+    label: i % 2 === 0 ? `${Math.round(edges[i])}` : "",
+    value: v,
+    title: `Age ${Math.round(edges[i])}–${Math.round(edges[i + 1] ?? edges[i] + 5)}: ${v} passengers`,
+  }));
 
   return (
     <div className="demo">
-      <div className="results">
-        <div>
-          <p className="section-label">Missing values per column (of {data.total_rows} rows)</p>
-          <Bars
-            items={data.counts.map((c) => ({ label: c.col, value: c.missing }))}
-            height={230}
-            fmt={(v) => `${v}`}
-          />
-        </div>
+      {/* Box 1 — where the holes are */}
+      <div className="subpanel">
+        <p className="shead">
+          Where are the holes? <Tip text="isna().sum() counts how many cells are empty in each column. deck is missing for 77% of passengers — often too sparse to keep." />
+        </p>
+        <p className="sdesc">Every column that has at least one missing value, out of {data.total_rows} total rows.</p>
+        <Bars
+          items={data.counts.map((c) => ({
+            label: c.col,
+            value: c.missing,
+            title: `${c.col}: ${c.missing} missing (${c.pct}%)`,
+          }))}
+          height={230}
+        />
+        <HowToRead>
+          Each bar is <b>one column</b>; its height is <b>how many rows are missing</b> that value. Hover any bar for the
+          exact count and percentage. <b>deck</b> towers over the rest — missing for most passengers — while <b>age</b> is
+          missing for {data.age.n_missing}.
+        </HowToRead>
+      </div>
 
-        <div>
-          <p className="section-label">Impute the {data.age.n_missing} missing ages — pick a strategy</p>
-          <div className="seg" style={{ marginBottom: "1rem" }}>
-            {STRATS.map((o) => (
-              <button key={o.id} aria-pressed={strat === o.id} onClick={() => setStrat(o.id)}>
-                {o.label}
-              </button>
-            ))}
-          </div>
-          <Bars items={bars} height={260} fmt={(v) => (v ? `${v}` : "")} />
-          <div className="callout" style={{ marginTop: "1rem" }}>
-            {BLURB[strat]}
-            {s.fill_value !== null && (
-              <>
-                {" "}
-                Every gap was filled with <b>{s.fill_value}</b>.
-              </>
-            )}
-          </div>
+      {/* Box 2 — fixing the age gaps */}
+      <div className="subpanel">
+        <p className="shead">
+          Filling the {data.age.n_missing} missing ages <Tip text="Imputation = filling gaps with a best guess. The choice of guess changes the shape of your data, which changes what your model learns." />
+        </p>
+        <p className="sdesc">
+          Pick a strategy and watch what it does to the <b>age</b> distribution. Same 891 passengers every time — only the
+          177 previously-missing ages change.
+        </p>
+        <div className="seg" style={{ marginBottom: "1rem" }}>
+          {STRATS.map((o) => (
+            <button key={o.id} aria-pressed={strat === o.id} onClick={() => setStrat(o.id)}>
+              {o.label}
+            </button>
+          ))}
+        </div>
+        <Bars items={bars} height={260} fmt={(v) => (v ? `${v}` : "")} />
+        <HowToRead>
+          The x-axis is <b>age in 5-year bins</b>; each bar’s height is <b>how many passengers fall in that range</b>. Hover a
+          bar for its exact range and count. The tallest raw bar is only ~114 (the natural 20–25 peak) — so when a single bar
+          shoots to <b>283</b>, that spike <b>is</b> the 177 missing ages all being dumped into one value.
+        </HowToRead>
+        <div className="callout" style={{ marginTop: "1rem" }}>
+          {BLURB[strat]}
+          {s.fill_value !== null && (
+            <>
+              {" "}
+              Every gap was filled with <b>{s.fill_value}</b>.
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -118,16 +118,36 @@ dump("scaling.json", scaling)
 # 3) ENCODING  -> encoding.json
 # ----------------------------------------------------------------------------
 print("encoding...")
-enc_df = titanic[["embarked", "class", "who"]].dropna().copy()
-sample = enc_df.head(6).reset_index(drop=True)
-onehot = pd.get_dummies(sample, dtype=int)
+from sklearn.preprocessing import OrdinalEncoder
+
+enc_cols = ["embarked", "class", "who"]
+base = titanic[enc_cols + ["survived"]].dropna(subset=enc_cols).copy()
+sample = base.head(6).reset_index(drop=True)
+
+# One-hot: one column per category
+onehot = pd.get_dummies(sample[enc_cols], dtype=int)
+
+# Ordinal: a stable integer per category (alphabetical), same 3 columns
+ord_enc = OrdinalEncoder()
+ord_all = ord_enc.fit_transform(base[enc_cols]).astype(int)
+ord_rows = ord_all[:6].tolist()
+ord_legend = {c: {str(cat): i for i, cat in enumerate(cats)}
+              for c, cats in zip(enc_cols, ord_enc.categories_)}
+
+# Target: replace each category with its mean survival rate (leakage-safe = train only;
+# here computed on all rows just to visualize the idea)
+target_maps = {c: base.groupby(c)["survived"].mean().round(3).to_dict() for c in enc_cols}
+tgt_rows = [[float(target_maps[c][row[c]]) for c in enc_cols] for _, row in sample.iterrows()]
+
 widths = {
-    "One-Hot": int(pd.get_dummies(enc_df, dtype=int).shape[1]),
-    "Ordinal": int(enc_df.shape[1]),
-    "Target": int(enc_df.shape[1]),
+    "One-Hot": int(pd.get_dummies(base[enc_cols], dtype=int).shape[1]),
+    "Ordinal": len(enc_cols),
+    "Target": len(enc_cols),
 }
 dump("encoding.json", {
-    "original": {"cols": list(sample.columns), "rows": sample.astype(str).values.tolist()},
+    "original": {"cols": enc_cols, "rows": sample[enc_cols].astype(str).values.tolist()},
+    "ordinal": {"cols": enc_cols, "rows": ord_rows, "legend": ord_legend},
+    "target": {"cols": enc_cols, "rows": tgt_rows},
     "onehot": {"cols": list(onehot.columns), "rows": onehot.values.tolist()},
     "widths": widths,
 })

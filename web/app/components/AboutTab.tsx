@@ -32,9 +32,9 @@ export default function AboutTab() {
 
       <h3><span className="num">★</span>The one rule that ties it together</h3>
       <p>
-        <b>Never fit a transformer on the test set.</b> Learn fill values, scales, and encodings from training data
-        only, then apply them to test data. Fitting on everything leaks information and makes your model look better
-        than it really is. Every demo here respects that split.
+        <b>Never fit on your test data.</b> Learn everything — fill values, scales, encodings — from the training data
+        only, then apply it to the test data. Letting any part of preprocessing peek at the test set leaks information
+        and makes your model look better than it really is. Every demo here respects that split.
       </p>
     </div>
   );
